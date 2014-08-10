@@ -24,11 +24,15 @@ class Member
 		Member();
 		~Member();
 		int getCurrentRating();					// retrieve current rating
-        string getFirstName();                  // retrieve first name
+		string getCurrentRating_s();			// retrieve current rating as a string
+		string getFirstName();                  // retrieve first name
         string getLastDate();                   // retrieve date (yy/mm/dd) of last participation
         string getLastName();                   // retrieve last name
         string getLastNameFirst();              // retrieve full name (last name first)
 		int getMemberID();                      // retrieve member ID
+		string getMemberID_s();					// retrieve member ID as a string
+		int getPreviousRating();				// retrieve previous rating
+		string getPreviousRating_s();			// retrieve previous rating as a string
 		bool setString(string);                 // set data members based on input string
 	protected:
 		// protected data members

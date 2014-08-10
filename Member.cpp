@@ -57,6 +57,25 @@ int Member::getCurrentRating()
 }
 
 /*************************************************************************************************************************************
+ * getCurrentRating_s - retrieve current rating as a string
+ *
+ * VRM      Date      By    Description
+ * ===   ==========   ===   ==========================================================================================================
+ * 100   08/10/2014   SDW   initial coding
+ *************************************************************************************************************************************/
+string Member::getCurrentRating_s()
+{
+	//TODO replace SS with better process?
+
+	stringstream ss;
+	string result;
+
+	ss << currentRating;
+	ss >> result;
+    return result;
+}
+
+/*************************************************************************************************************************************
  * getFirstName - retrieve first name
  *
  * VRM      Date      By    Description
@@ -73,19 +92,29 @@ string Member::getFirstName()
  *
  * VRM      Date      By    Description
  * ===   ==========   ===   ==========================================================================================================
- * 100   08/09/2014   SDW   initial coding
+ * 100   08/10/2014   SDW   initial coding
  *************************************************************************************************************************************/
 string Member::getLastDate()
 {
-    // local variable
+	//TODO replace SS with better process?
+	//TODO find better string addition
+
+	// local variable
+	stringstream ss, ss2, ss3;
+	string temps;
 	string result;
 
 	// process
-    result = lastYear;
+    ss << lastYear;
+	ss >> result;
     result += "/";
-    result += lastMonth;
+	ss2 << lastMonth;
+	ss2 >> temps;
+    result += temps;
     result += "/";
-    result += lastDay;
+	ss3 << lastDay;
+	ss3 >> temps;
+	result += temps;
     return result;
 }
 
@@ -110,6 +139,8 @@ string Member::getLastName()
  *************************************************************************************************************************************/
 string Member::getLastNameFirst()
 {
+	//TODO find better string addition
+
     string result;
     result = lastName;
     result += ", ";
@@ -130,29 +161,76 @@ int Member::getMemberID()
 }
 
 /*************************************************************************************************************************************
+ * getMemberID_s - retrieve member ID as a string
+ *
+ * VRM      Date      By    Description
+ * ===   ==========   ===   ==========================================================================================================
+ * 100   08/10/2014   SDW   initial coding
+ *************************************************************************************************************************************/
+string Member::getMemberID_s()
+{
+	//TODO replace SS with better process?
+
+	stringstream ss;
+	string result;
+
+	ss << memberID;
+	ss >> result;
+    return result;
+}
+
+/*************************************************************************************************************************************
+ * getPreviousRating - retrieve previous rating
+ *
+ * VRM      Date      By    Description
+ * ===   ==========   ===   ==========================================================================================================
+ * 100   08/10/2014   SDW   initial coding
+ *************************************************************************************************************************************/
+int Member::getPreviousRating()
+{
+    return prevRating;
+}
+
+/*************************************************************************************************************************************
+ * getPreviousRating_s - retrieve previous rating as a string
+ *
+ * VRM      Date      By    Description
+ * ===   ==========   ===   ==========================================================================================================
+ * 100   08/10/2014   SDW   initial coding
+ *************************************************************************************************************************************/
+string Member::getPreviousRating_s()
+{
+	//TODO replace SS with better process?
+
+	stringstream ss;
+	string result;
+
+	ss << prevRating;
+	ss >> result;
+    return result;
+}
+
+/*************************************************************************************************************************************
  * setString - set data members based on input string
  *
  * VRM      Date      By    Description
  * ===   ==========   ===   ==========================================================================================================
- * 100   08/xx/2014   SDW   initial coding
+ * 100   08/10/2014   SDW   initial coding
  *************************************************************************************************************************************/
 bool Member::setString(string inputrec)
 {
-    // local variables
-    stringstream ss;
-
-	vector<string> words = split(inputrec, ',');
-	ss << words[0];
-	ss >> memberID;
-	memberID = std::stoi(words[0]);
+	// parse input string into individual words
+	vector<string> words = split(inputrec, ',');	
+	// set object data members
+	memberID = std::stoi(words[0]);				
 	lastName = words[1];
 	firstName = words[2];
-	//currentRating = stoi(words[3]);
-	//prevRating = elements[4];
-	//lastYear = elements[5];
-	//lastMonth = elements[6];
-	//lastDay = elements[7];
-
+	currentRating = stoi(words[3]);
+	prevRating = stoi(words[4]);
+	lastYear = stoi(words[5]);
+	lastMonth = stoi(words[6]);
+	lastDay = stoi(words[7]);
+	// return to caller
     return true;
 }
 

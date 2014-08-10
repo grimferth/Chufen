@@ -245,7 +245,7 @@ void MainFrame::OnRosterClose(wxCommandEvent& event)
  *
  * VRM      Date      By    Description
  * ===   ==========   ===   ==========================================================================================================
- * 100   xx/xx/2014   SDW   initial coding
+ * 100   08/10/2014   SDW   initial coding
  *************************************************************************************************************************************/
 void MainFrame::OnRosterDisplay(wxCommandEvent& event)
 {
@@ -253,22 +253,32 @@ void MainFrame::OnRosterDisplay(wxCommandEvent& event)
 	int index;									// index into roster
 	Member thisMember;							// Member currently being processed
 
-	//
+	// define roster grid
 	grid1 = new wxGrid(notebook, wxID_ANY, wxDefaultPosition, wxSize(400, 300));
-	grid1->CreateGrid(thisClub.getMemberCount(), 10);
-	notebook->AddPage(grid1, _("Roster"), true);
-
+	grid1->CreateGrid(thisClub.getMemberCount(), 5);
+	
 	// iterate through roster while populating grid
 	for(index = 0; index < thisClub.getMemberCount(); index++)
 	{
 		thisMember = thisClub.getMember(index);
-		//grid1->SetCellValue(index,0,thisMember.getMemberID());
+		grid1->SetCellValue(index,0,thisMember.getMemberID_s());
 		grid1->SetCellValue(index,1,thisMember.getLastNameFirst());
+		grid1->SetCellValue(index,2,thisMember.getCurrentRating_s());
+		grid1->SetCellValue(index,3,thisMember.getPreviousRating_s());
+		grid1->SetCellValue(index,4,thisMember.getLastDate());
 	}
 
-
-
-	wxLogMessage(_("Roster Display"));
+	// format and add to notebook
+	grid1->SetColFormatNumber(0);
+	grid1->SetColFormatNumber(2);
+	grid1->SetColFormatNumber(3);
+	grid1->SetColLabelValue(0,_("Member ID"));
+	grid1->SetColLabelValue(1,_("Name"));
+	grid1->SetColLabelValue(2,_("Current Rating"));
+	grid1->SetColLabelValue(3,_("Previous Rating"));
+	grid1->SetColLabelValue(4,_("Last"));
+	grid1->AutoSizeColumns(true);
+	notebook->AddPage(grid1, _("Roster"), true);
 }
 
 /*************************************************************************************************************************************
@@ -309,7 +319,7 @@ void MainFrame::OnRosterOpen(wxCommandEvent& event)
     }
 
 	wxLogMessage(_("Roster Open"));
-
+	//TODO invoke display
 }
 
 /*************************************************************************************************************************************
