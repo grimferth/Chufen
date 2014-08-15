@@ -14,17 +14,20 @@
 
 //3rd party header files
 #include <wx/grid.h>
+#include <wx/msgdlg.h>
 #include <wx/notebook.h>
 
 // project header files
+#include "common.h"
 #include "MainFrame.h"
 #include "Roster.h"
 
 // declarations
-wxString rosterDirectory;						// directory of selected roster file
-wxString rosterFilename;						// file name of selected roster file
-wxString rosterPath;							// path name to selected roster file
-Roster thisClub;								// the roster of this club
+U16 flags;														// control flags
+wxString rosterDirectory;										// directory of selected roster file
+wxString rosterFilename;										// file name of selected roster file
+wxString rosterPath;											// path name to selected roster file
+Roster thisClub;												// the roster of this club
 wxNotebook* notebook;
 wxGrid* grid1;
 
@@ -45,17 +48,17 @@ wxString wxbuildinfo(wxbuildinfoformat format)
     if (format == long_f )
     {
 #if defined(__WXMSW__)
-        wxbuild << _T("-Windows");
+        wxbuild << "-Windows";
 #elif defined(__WXMAC__)
-        wxbuild << _T("-Mac");
+        wxbuild << "-Mac";
 #elif defined(__UNIX__)
-        wxbuild << _T("-Linux");
+        wxbuild << "-Linux";
 #endif
 
 #if wxUSE_UNICODE
-        wxbuild << _T("-Unicode build");
+        wxbuild << "-Unicode build";
 #else
-        wxbuild << _T("-ANSI build");
+        wxbuild << "-ANSI build";
 #endif // wxUSE_UNICODE
     }
 
@@ -70,7 +73,6 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(idMenuQuit, MainFrame::OnQuit)
     EVT_MENU(idMenuAbout, MainFrame::OnAbout)
     EVT_MENU(ID_RosterClose, MainFrame::OnRosterClose)
-	EVT_MENU(ID_RosterDisplay, MainFrame::OnRosterDisplay)
 	EVT_MENU(ID_RosterNew, MainFrame::OnRosterNew)
     EVT_MENU(ID_RosterOpen, MainFrame::OnRosterOpen)
     EVT_MENU(ID_RosterSave, MainFrame::OnRosterSave)
@@ -92,37 +94,35 @@ MainFrame::MainFrame(wxFrame *frame, const wxString& title)
     : wxFrame(frame, -1, title)
 {
 	// create a menu bar
-	wxMenu *menuFile = new wxMenu;               // File menu
-    menuFile->Append(ID_Hello, _("&Hello...\tCtrl-H"), _("Help string shown in status bar for this menu item"));
+	wxMenu *menuFile = new wxMenu;								// File menu
+    menuFile->Append(ID_Hello, "&Hello...\tCtrl-H", "Help string shown in status bar for this menu item");
     menuFile->AppendSeparator();
-    menuFile->Append(idMenuQuit, _("&Quit\tAlt-F4"), _("Quit the application"));
-    wxMenu *menuRoster = new wxMenu;             // Roster menu
-    menuRoster->Append(ID_RosterNew, _("&New...\tCtrl-N"), _("Create new file of club members"));
-    menuRoster->Append(ID_RosterOpen, _("&Open...\tCtrl-O"), _("Open file of club members"));
-    menuRoster->Append(ID_RosterDisplay, _("&Display"), _("Display file of club members"));
-    menuRoster->Append(ID_RosterSave, _("&Save...\tCtrl-S"), _("Save club membership file"));
-    menuRoster->Append(ID_RosterSaveAs, _("&SaveAs...\tCtrl-S"), _("Save club membership file"));
-    menuRoster->Append(ID_RosterClose, _("&Close...\tCtrl-W"), _("Close club membership file"));
-    wxMenu *menuEvent = new wxMenu;              // Event menu
-    menuEvent->Append(ID_EventNew, _("&New...\tCtrl-N"), _("Create new club event"));
-    menuEvent->Append(ID_EventOpen, _("&Open...\tCtrl-O"), _("Open club event"));
-    menuEvent->Append(ID_EventSave, _("&Save...\tCtrl-C"), _("Save club event"));
-    menuEvent->Append(ID_EventSaveAs, _("&SaveAs...\tCtrl-C"), _("Save club event"));
-    wxMenu *menuHelp = new wxMenu;               // Help menu
-    menuHelp->Append(idMenuAbout, _("&About\tF1"), _("Show info about this application"));
-    wxMenuBar *menuBar = new wxMenuBar;          // menubar
-    menuBar->Append( menuFile, _("&File") );
-    menuBar->Append( menuRoster, _("&Roster"));
-    menuBar->Append( menuEvent, _("&Event"));
-    menuBar->Append( menuHelp, _("&Help" ));
+    menuFile->Append(idMenuQuit, "&Quit\tAlt-F4", "Quit the application");
+    wxMenu *menuRoster = new wxMenu;							// Roster menu
+    menuRoster->Append(ID_RosterNew, "&New...\tCtrl-N", "Create new file of club members");
+    menuRoster->Append(ID_RosterOpen, "&Open...\tCtrl-O", "Open file of club members");
+    menuRoster->Append(ID_RosterSave, "&Save...\tCtrl-S", "Save club membership file");
+    menuRoster->Append(ID_RosterSaveAs, "&SaveAs...\tCtrl-S", "Save club membership file");
+    menuRoster->Append(ID_RosterClose, "&Close...\tCtrl-W", "Close club membership file");
+    wxMenu *menuEvent = new wxMenu;								// Event menu
+    menuEvent->Append(ID_EventNew, "&New...\tCtrl-N", "Create new club event");
+    menuEvent->Append(ID_EventOpen, "&Open...\tCtrl-O", "Open club event");
+    menuEvent->Append(ID_EventSave, "&Save...\tCtrl-C", "Save club event");
+    menuEvent->Append(ID_EventSaveAs, "&SaveAs...\tCtrl-C", "Save club event");
+    wxMenu *menuHelp = new wxMenu;								// Help menu
+    menuHelp->Append(idMenuAbout, "&About\tF1", "Show info about this application");
+    wxMenuBar *menuBar = new wxMenuBar;							// menubar
+    menuBar->Append( menuFile, "&File");
+    menuBar->Append( menuRoster, "&Roster");
+    menuBar->Append( menuEvent, "&Event");
+    menuBar->Append( menuHelp, "&Help");
     SetMenuBar( menuBar );
 
     // create a status bar
 	CreateStatusBar();
-    SetStatusText(_("Welcome to Chufen!"));
+    SetStatusText("Welcome to Chufen!");
 
     // create the notebook
-    //wxNotebook* notebook = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxSize(300, 200));
     notebook = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxSize(300, 200));
 
 
@@ -150,7 +150,7 @@ MainFrame::~MainFrame()
 void MainFrame::OnAbout(wxCommandEvent &event)
 {
     wxString msg = wxbuildinfo(long_f);
-    wxMessageBox(msg, _("Welcome to..."));
+    wxMessageBox(msg, "Welcome to...");
 }
 
 /*************************************************************************************************************************************
@@ -174,7 +174,7 @@ void MainFrame::OnClose(wxCloseEvent &event)
  *************************************************************************************************************************************/
 void MainFrame::OnEventNew(wxCommandEvent& event)
 {
-	wxLogMessage(_("Event New"));
+	wxLogMessage("Event New");
 }
 
 /*************************************************************************************************************************************
@@ -186,7 +186,7 @@ void MainFrame::OnEventNew(wxCommandEvent& event)
  *************************************************************************************************************************************/
 void MainFrame::OnEventOpen(wxCommandEvent& event)
 {
-	wxLogMessage(_("Event Open"));
+	wxLogMessage("Event Open");
 }
 
 
@@ -199,7 +199,7 @@ void MainFrame::OnEventOpen(wxCommandEvent& event)
  *************************************************************************************************************************************/
 void MainFrame::OnEventSave(wxCommandEvent& event)
 {
-	wxLogMessage(_("Event Save"));
+	wxLogMessage("Event Save");
 }
 
 /*************************************************************************************************************************************
@@ -211,7 +211,7 @@ void MainFrame::OnEventSave(wxCommandEvent& event)
  *************************************************************************************************************************************/
 void MainFrame::OnEventSaveAs(wxCommandEvent& event)
 {
-	wxLogMessage(_("Event SaveAs"));
+	wxLogMessage("Event SaveAs");
 }
 
 /*************************************************************************************************************************************
@@ -231,27 +231,61 @@ void MainFrame::OnQuit(wxCommandEvent &event)
  *
  * VRM      Date      By    Description
  * ===   ==========   ===   ==========================================================================================================
- * 100   xx/xx/2014   SDW   initial coding
+ * 100   08/14/2014   SDW   initial coding
  *************************************************************************************************************************************/
 void MainFrame::OnRosterClose(wxCommandEvent& event)
 {
-	notebook->DeletePage(0);
-
-	wxLogMessage(_("Roster Close"));
+	PerformRosterClose();
 }
 
 /*************************************************************************************************************************************
- * OnRosterDisplay - handler for ID_RosterDisplay
+ * OnRosterNew - handler for ID_RosterNew
  *
  * VRM      Date      By    Description
  * ===   ==========   ===   ==========================================================================================================
- * 100   08/10/2014   SDW   initial coding
+ * 100   xx/xx/2014   SDW   initial coding
  *************************************************************************************************************************************/
-void MainFrame::OnRosterDisplay(wxCommandEvent& event)
+void MainFrame::OnRosterNew(wxCommandEvent& event)
+{
+	wxLogMessage("Roster New");
+}
+
+/*************************************************************************************************************************************
+ * OnRosterOpen - handler for ID_RosterOpen
+ *
+ * VRM      Date      By    Description
+ * ===   ==========   ===   ==========================================================================================================
+ * 100   08/14/2014   SDW   initial coding
+ *************************************************************************************************************************************/
+void MainFrame::OnRosterOpen(wxCommandEvent& event)
 {
 	// local variables
-	int index;									// index into roster
-	Member thisMember;							// Member currently being processed
+	int result;													// value returned from dialogs
+	int index;													// index into roster
+	Member thisMember;											// Member currently being processed
+
+	// check to see if roster is already open
+	if ((flags & FLAG_ROSTER_OPEN) != FLAGS_EMPTY)
+	{
+		result = wxMessageBox("Close existing roster?","Confirm", wxYES_NO, this);
+		if (result == wxYES)
+			PerformRosterClose();
+		else
+			return;
+	}
+
+	// select roster file to be opened
+	wxFileDialog *openDialog = new wxFileDialog(this, "Choose a roster file", "", "", "CSV (*.csv)|*.csv", wxFD_OPEN|wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR );
+    result = openDialog->ShowModal();
+	if (result != wxID_OK)
+		return;
+
+    // load roster from selected file
+	rosterDirectory = openDialog->GetDirectory();				// keep directory of selected file
+    rosterFilename = openDialog->GetFilename();					// keep file name
+    rosterPath = openDialog->GetPath();							// keep path
+    thisClub.readFile(rosterFilename);							// perform the load of the file into roster
+	flags |= FLAG_ROSTER_OPEN;									// set the flag
 
 	// define roster grid
 	grid1 = new wxGrid(notebook, wxID_ANY, wxDefaultPosition, wxSize(400, 300));
@@ -272,54 +306,13 @@ void MainFrame::OnRosterDisplay(wxCommandEvent& event)
 	grid1->SetColFormatNumber(0);
 	grid1->SetColFormatNumber(2);
 	grid1->SetColFormatNumber(3);
-	grid1->SetColLabelValue(0,_("Member ID"));
-	grid1->SetColLabelValue(1,_("Name"));
-	grid1->SetColLabelValue(2,_("Current Rating"));
-	grid1->SetColLabelValue(3,_("Previous Rating"));
-	grid1->SetColLabelValue(4,_("Last"));
+	grid1->SetColLabelValue(0, "Member ID");
+	grid1->SetColLabelValue(1, "Name");
+	grid1->SetColLabelValue(2, "Current Rating");
+	grid1->SetColLabelValue(3, "Previous Rating");
+	grid1->SetColLabelValue(4, "Last");
 	grid1->AutoSizeColumns(true);
-	notebook->AddPage(grid1, _("Roster"), true);
-}
-
-/*************************************************************************************************************************************
- * OnRosterNew - handler for ID_RosterNew
- *
- * VRM      Date      By    Description
- * ===   ==========   ===   ==========================================================================================================
- * 100   xx/xx/2014   SDW   initial coding
- *************************************************************************************************************************************/
-void MainFrame::OnRosterNew(wxCommandEvent& event)
-{
-	wxLogMessage(_("Roster New"));
-}
-
-/*************************************************************************************************************************************
- * OnRosterOpen - handler for ID_RosterOpen
- *
- * VRM      Date      By    Description
- * ===   ==========   ===   ==========================================================================================================
- * 100   xx/xx/2014   SDW   initial coding
- *************************************************************************************************************************************/
-void MainFrame::OnRosterOpen(wxCommandEvent& event)
-{
-	int result;
-
-    // select roster file to be opened
-	wxFileDialog *openDialog = new wxFileDialog(this, wxT("Choose a roster file"), wxT(""), wxT(""), wxT("CSV (*.csv)|*.csv"), wxFD_OPEN|wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR );
-    result = openDialog->ShowModal();
-
-    // load roster from selected file
-    if (result == wxID_OK)
-    {
-        rosterDirectory = openDialog->GetDirectory();
-        rosterFilename = openDialog->GetFilename();
-        rosterPath = openDialog->GetPath();
-        thisClub.readFile(rosterFilename);
-        wxLogMessage(_("Roster Open"));
-    }
-
-	wxLogMessage(_("Roster Open"));
-	//TODO invoke display
+	notebook->AddPage(grid1, "Roster", true);
 }
 
 /*************************************************************************************************************************************
@@ -331,7 +324,7 @@ void MainFrame::OnRosterOpen(wxCommandEvent& event)
  *************************************************************************************************************************************/
 void MainFrame::OnRosterSave(wxCommandEvent& event)
 {
-	wxLogMessage(_("Roster Save"));
+	wxLogMessage("Roster Save");
 }
 
 /*************************************************************************************************************************************
@@ -343,6 +336,20 @@ void MainFrame::OnRosterSave(wxCommandEvent& event)
  *************************************************************************************************************************************/
 void MainFrame::OnRosterSaveAs(wxCommandEvent& event)
 {
-	wxLogMessage(_("Roster SaveAs"));
+	wxLogMessage("Roster SaveAs");
+}
+
+/*************************************************************************************************************************************
+ * PerformRosterClose - actually closes roster
+ *
+ * VRM      Date      By    Description
+ * ===   ==========   ===   ==========================================================================================================
+ * 100   xx/xx/2014   SDW   initial coding
+ *************************************************************************************************************************************/
+void MainFrame::PerformRosterClose()
+{
+	notebook->DeletePage(0);									// remove roster page from notebook   //TODO
+	flags &= ~FLAG_ROSTER_OPEN;									// clear flag for open roster
+	// TODO clear strings with file and path names
 }
 

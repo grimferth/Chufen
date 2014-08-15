@@ -21,7 +21,7 @@ IMPLEMENT_APP(MyApp);
 
 bool MyApp::OnInit()
 {
-    MainFrame* frame = new MainFrame(0L, _("Chufen Project"));
+    MainFrame* frame = new MainFrame(0L, "Chufen Project");
     frame->SetIcon(wxICON(aaaa));
     frame->Show();
     return true;

@@ -15,6 +15,9 @@
 /***************************************************************************************************************
  * symbolic definitions
  ***************************************************************************************************************/
+																// flag definitions
+#define FLAGS_EMPTY 0												// mask 0000 0000 0000 0000
+#define FLAG_ROSTER_OPEN 1											// mask 0000 0000 0000 0001
 
 /***************************************************************************************************************
  * class definitions
@@ -37,7 +40,6 @@ class MainFrame: public wxFrame
             idMenuAbout,
             ID_Hello = 1,
 			ID_RosterClose,
-			ID_RosterDisplay,
 			ID_RosterNew,
 			ID_RosterOpen,
 			ID_RosterAdd,
@@ -58,11 +60,11 @@ class MainFrame: public wxFrame
 		void OnEventSaveAs(wxCommandEvent& event);
 		void OnQuit(wxCommandEvent& event);
 		void OnRosterClose(wxCommandEvent& event);
-		void OnRosterDisplay(wxCommandEvent& event);
 		void OnRosterNew(wxCommandEvent& event);
 		void OnRosterOpen(wxCommandEvent& event);
 		void OnRosterSave(wxCommandEvent& event);
 		void OnRosterSaveAs(wxCommandEvent& event);
+		void PerformRosterClose(void);
 		// ?
         DECLARE_EVENT_TABLE()
 };
