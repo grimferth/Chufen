@@ -1,7 +1,6 @@
 /*************************************************************************************************************************************
  * Name:        Member.cpp
  * Purpose:     member class
-
  * Licence:     GNU GPL v3.0 (29 June 2007)
  * -----------------------------------------------------------------------------------------------------------------------------------
  * Copyright (C) 2014, Stephen Wunschel
@@ -17,6 +16,7 @@ using namespace std;
 #include <wx/log.h>
 
 // project header files
+#include "common.h"
 #include "Member.h"
 #include "shared_functions.h"
 
@@ -234,3 +234,22 @@ bool Member::setString(string inputrec)
     return true;
 }
 
+/*************************************************************************************************************************************
+ * getString - get data members as csv-formatted string
+ *
+ * VRM      Date      By    Description
+ * ===   ==========   ===   ==========================================================================================================
+ * 100   09/01/2014   SDW   initial coding
+ *************************************************************************************************************************************/
+string Member::getString()
+{
+	// local variables
+	char buffer[MAXBUFFER];
+	string result;
+
+	// format data variables into c-string
+	sprintf(buffer, "%u,%s,%s,%u,%u,%u,%u,%u", memberID, lastName.c_str(), firstName.c_str(), currentRating, prevRating, lastYear, lastMonth, lastDay);
+	result = buffer;
+	// return to caller
+    return result;
+}

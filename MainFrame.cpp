@@ -335,7 +335,7 @@ void MainFrame::OnRosterSave(wxCommandEvent& event)
  *
  * VRM      Date      By    Description
  * ===   ==========   ===   ==========================================================================================================
- * 100   xx/xx/2014   SDW   initial coding
+ * 100   09/01/2014   SDW   initial coding
  *************************************************************************************************************************************/
 void MainFrame::OnRosterSaveAs(wxCommandEvent& event)
 {
@@ -357,10 +357,6 @@ void MainFrame::OnRosterSaveAs(wxCommandEvent& event)
     rosterFilename = openDialog->GetFilename();					// keep file name
     rosterPath = openDialog->GetPath();							// keep path
     thisClub.saveFile(rosterFilename);							// perform the save of the roster into the file
-
-	//TODO
-
-	wxLogMessage("Roster SaveAs");
 }
 
 /*************************************************************************************************************************************

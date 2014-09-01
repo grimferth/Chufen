@@ -33,6 +33,7 @@ class Member
 		string getMemberID_s();					// retrieve member ID as a string
 		int getPreviousRating();				// retrieve previous rating
 		string getPreviousRating_s();			// retrieve previous rating as a string
+		string getString();						// get data members as csv-formatted string
 		bool setString(string);                 // set data members based on input string
 	protected:
 		// protected data members

@@ -48,8 +48,8 @@ Roster::~Roster()
  *************************************************************************************************************************************/
 bool Roster::clearRoster()
 {
-    highMemberID = 0;                            // clear high member id
-    memberList.clear();                          // clear member list
+    highMemberID = 0;											// clear high member id
+    memberList.clear();											// clear member list
 
     return true;
 }
@@ -103,9 +103,9 @@ bool Roster::isLoaded()
 bool Roster::readFile(wxString filename)
 {
     // local variables
-	ifstream infile;							// file object
-    string inputrec;							// input record
-    Member inputMember;                         // input member
+	ifstream infile;											// file object
+    string inputrec;											// input record
+    Member inputMember;											// input member
 
     // open roster file
 	infile.open(filename.mb_str(wxConvUTF8) );
@@ -113,15 +113,15 @@ bool Roster::readFile(wxString filename)
     // load roster file if open
 	if (infile.is_open())
 	{
-        clearRoster();                          // clear roster
+        clearRoster();											// clear roster
 		while (getline(infile,inputrec))
 		{
-			inputMember.setString(inputrec);    // format input record into member
-            memberList.push_back(inputMember);  // push input member onto back of member list
-            if (highMemberID < inputMember.getMemberID())  // copy member ID if highest
+			inputMember.setString(inputrec);					// format input record into member
+            memberList.push_back(inputMember);					// push input member onto back of member list
+            if (highMemberID < inputMember.getMemberID())		// copy member ID if highest
                 highMemberID = inputMember.getMemberID();
 		}
-		infile.close();							// close file
+		infile.close();											// close file
 		return true;
 	}
 
@@ -136,33 +136,29 @@ bool Roster::readFile(wxString filename)
  *
  * VRM      Date      By    Description
  * ===   ==========   ===   ==========================================================================================================
- * 100   08/xx/2014   SDW   initial coding
+ * 100   09/01/2014   SDW   initial coding
  *************************************************************************************************************************************/
 bool Roster::saveFile(wxString filename)
 {
- //   // local variables
-	//ifstream infile;							// file object
- //   string inputrec;							// input record
- //   Member inputMember;                         // input member
+    // local variables
+	ofstream savefile;											// file object
+    string saverec;												// record line
+	int index;													// loop counter
 
- //   // open roster file
-	//infile.open(filename.mb_str(wxConvUTF8) );
+    // open roster file
+	savefile.open(filename.mb_str(wxConvUTF8),std::ofstream::out|std::ofstream::trunc);
+	if (!savefile.is_open())
+		return false;
 
- //   // load roster file if open
-	//if (infile.is_open())
-	//{
- //       clearRoster();                          // clear roster
-	//	while (getline(infile,inputrec))
-	//	{
-	//		inputMember.setString(inputrec);    // format input record into member
- //           memberList.push_back(inputMember);  // push input member onto back of member list
- //           if (highMemberID < inputMember.getMemberID())  // copy member ID if highest
- //               highMemberID = inputMember.getMemberID();
-	//	}
-	//	infile.close();							// close file
-	//	return true;
-	//}
+	// loop through roster writing records
+	for(index = 0; index < getMemberCount(); index++)
+	{
+		saverec = memberList[index].getString();				// format save record
+		savefile << saverec << endl;  							// write record to save file
+	}
 
-    return false;
+	savefile.close();											// close file
+	return true;
+
 
 }
