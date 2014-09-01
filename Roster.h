@@ -31,7 +31,9 @@ class Roster
 		bool clearRoster(void);					// clear roster
 		Member getMember(int);					// return member object
 		int getMemberCount(void);				// return value of memberCount
+		bool isLoaded(void);					// returns true if values are loaded into roster
 		bool readFile(wxString);				// load Roster from csv-formatted file
+		bool saveFile(wxString);				// save Roster into csv-formatted file
 	protected:
 		// protected data members
 		// protected method members

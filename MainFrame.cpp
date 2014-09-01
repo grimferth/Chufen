@@ -265,7 +265,7 @@ void MainFrame::OnRosterOpen(wxCommandEvent& event)
 	Member thisMember;											// Member currently being processed
 
 	// check to see if roster is already open
-	if ((flags & FLAG_ROSTER_OPEN) != FLAGS_EMPTY)
+	if (thisClub.isLoaded())
 	{
 		result = wxMessageBox("Close existing roster?","Confirm", wxYES_NO, this);
 		if (result == wxYES)
@@ -285,7 +285,6 @@ void MainFrame::OnRosterOpen(wxCommandEvent& event)
     rosterFilename = openDialog->GetFilename();					// keep file name
     rosterPath = openDialog->GetPath();							// keep path
     thisClub.readFile(rosterFilename);							// perform the load of the file into roster
-	flags |= FLAG_ROSTER_OPEN;									// set the flag
 
 	// define roster grid
 	grid1 = new wxGrid(notebook, wxID_ANY, wxDefaultPosition, wxSize(400, 300));
@@ -324,6 +323,10 @@ void MainFrame::OnRosterOpen(wxCommandEvent& event)
  *************************************************************************************************************************************/
 void MainFrame::OnRosterSave(wxCommandEvent& event)
 {
+	// check to see if roster is already open
+	if (!thisClub.isLoaded())
+		return;
+
 	wxLogMessage("Roster Save");
 }
 
@@ -336,6 +339,27 @@ void MainFrame::OnRosterSave(wxCommandEvent& event)
  *************************************************************************************************************************************/
 void MainFrame::OnRosterSaveAs(wxCommandEvent& event)
 {
+	// local variables
+	int result;													// value returned from dialogs
+
+	// check to see if roster is already open
+	if (!thisClub.isLoaded())
+		return;
+
+	// select roster file to be opened
+	wxFileDialog *openDialog = new wxFileDialog(this, "Choose a roster file", "", "", "CSV (*.csv)|*.csv", wxFD_SAVE|wxFD_OVERWRITE_PROMPT|wxFD_CHANGE_DIR );
+    result = openDialog->ShowModal();
+	if (result != wxID_OK)
+		return;
+
+	// save roster to selected file
+	rosterDirectory = openDialog->GetDirectory();				// keep directory of selected file
+    rosterFilename = openDialog->GetFilename();					// keep file name
+    rosterPath = openDialog->GetPath();							// keep path
+    thisClub.saveFile(rosterFilename);							// perform the save of the roster into the file
+
+	//TODO
+
 	wxLogMessage("Roster SaveAs");
 }
 
@@ -349,7 +373,7 @@ void MainFrame::OnRosterSaveAs(wxCommandEvent& event)
 void MainFrame::PerformRosterClose()
 {
 	notebook->DeletePage(0);									// remove roster page from notebook   //TODO
-	flags &= ~FLAG_ROSTER_OPEN;									// clear flag for open roster
+	thisClub.clearRoster();										// clear roster
 	// TODO clear strings with file and path names
 }
 

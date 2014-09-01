@@ -80,7 +80,21 @@ int Roster::getMemberCount()
 }
 
 /*************************************************************************************************************************************
+ * isLoaded - returns true if values are loaded into roster
+ *
+ * VRM      Date      By    Description
+ * ===   ==========   ===   ==========================================================================================================
+ * 100   08/30/2014   SDW   initial coding
+ *************************************************************************************************************************************/
+bool Roster::isLoaded()
+{
+	return (!memberList.empty());
+}
+
+/*************************************************************************************************************************************
  * readFile - load Roster from csv-formatted file
+ *
+ * TODO: convert input parm from wxString
  *
  * VRM      Date      By    Description
  * ===   ==========   ===   ==========================================================================================================
@@ -110,6 +124,44 @@ bool Roster::readFile(wxString filename)
 		infile.close();							// close file
 		return true;
 	}
+
+    return false;
+
+}
+
+/*************************************************************************************************************************************
+ * saveFile - save Roster into csv-formatted file
+ *
+ * TODO: convert input parm from wxString
+ *
+ * VRM      Date      By    Description
+ * ===   ==========   ===   ==========================================================================================================
+ * 100   08/xx/2014   SDW   initial coding
+ *************************************************************************************************************************************/
+bool Roster::saveFile(wxString filename)
+{
+ //   // local variables
+	//ifstream infile;							// file object
+ //   string inputrec;							// input record
+ //   Member inputMember;                         // input member
+
+ //   // open roster file
+	//infile.open(filename.mb_str(wxConvUTF8) );
+
+ //   // load roster file if open
+	//if (infile.is_open())
+	//{
+ //       clearRoster();                          // clear roster
+	//	while (getline(infile,inputrec))
+	//	{
+	//		inputMember.setString(inputrec);    // format input record into member
+ //           memberList.push_back(inputMember);  // push input member onto back of member list
+ //           if (highMemberID < inputMember.getMemberID())  // copy member ID if highest
+ //               highMemberID = inputMember.getMemberID();
+	//	}
+	//	infile.close();							// close file
+	//	return true;
+	//}
 
     return false;
 
