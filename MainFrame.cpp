@@ -13,6 +13,7 @@
 // standard header files
 
 //3rd party header files
+#include <wx/filename.h>
 #include <wx/grid.h>
 #include <wx/msgdlg.h>
 #include <wx/notebook.h>
@@ -24,6 +25,7 @@
 
 // declarations
 U16 flags;														// control flags
+wxMenuBar *menuBar = new wxMenuBar;								// menubar
 wxString rosterDirectory;										// directory of selected roster file
 wxString rosterFilename;										// file name of selected roster file
 wxString rosterPath;											// path name to selected roster file
@@ -73,6 +75,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(idMenuQuit, MainFrame::OnQuit)
     EVT_MENU(idMenuAbout, MainFrame::OnAbout)
     EVT_MENU(ID_RosterClose, MainFrame::OnRosterClose)
+	EVT_MENU(ID_RosterDeleteRow, MainFrame::OnRosterDeleteRow)
 	EVT_MENU(ID_RosterNew, MainFrame::OnRosterNew)
     EVT_MENU(ID_RosterOpen, MainFrame::OnRosterOpen)
     EVT_MENU(ID_RosterSave, MainFrame::OnRosterSave)
@@ -95,26 +98,35 @@ MainFrame::MainFrame(wxFrame *frame, const wxString& title)
 {
 	// create a menu bar
 	wxMenu *menuFile = new wxMenu;								// File menu
-    menuFile->Append(ID_Hello, "&Hello...\tCtrl-H", "Help string shown in status bar for this menu item");
-    menuFile->AppendSeparator();
     menuFile->Append(idMenuQuit, "&Quit\tAlt-F4", "Quit the application");
+	menuBar->Append( menuFile, "&File");
     wxMenu *menuRoster = new wxMenu;							// Roster menu
-    menuRoster->Append(ID_RosterNew, "&New...\tCtrl-N", "Create new file of club members");
-    menuRoster->Append(ID_RosterOpen, "&Open...\tCtrl-O", "Open file of club members");
-    menuRoster->Append(ID_RosterSave, "&Save...\tCtrl-S", "Save club membership file");
-    menuRoster->Append(ID_RosterSaveAs, "&SaveAs...\tCtrl-S", "Save club membership file");
-    menuRoster->Append(ID_RosterClose, "&Close...\tCtrl-W", "Close club membership file");
-    wxMenu *menuEvent = new wxMenu;								// Event menu
-    menuEvent->Append(ID_EventNew, "&New...\tCtrl-N", "Create new club event");
-    menuEvent->Append(ID_EventOpen, "&Open...\tCtrl-O", "Open club event");
-    menuEvent->Append(ID_EventSave, "&Save...\tCtrl-C", "Save club event");
-    menuEvent->Append(ID_EventSaveAs, "&SaveAs...\tCtrl-C", "Save club event");
+	menuRoster->Append(ID_RosterNew, "&New...\tCtrl-N", "Create new file of club members");
+	menuRoster->Append(ID_RosterOpen, "Open &Roster...\tCtrl-R", "Open file of club members");
+	menuRoster->Append(ID_RosterSave, "&Save...\tCtrl-S", "Save club membership file");
+	menuRoster->Append(ID_RosterSaveAs, "Save&As...\tCtrl-A", "Save club membership file");
+	menuRoster->Append(ID_RosterClose, "&Close...\tCtrl-C", "Close club membership file");
+	menuRoster->AppendSeparator();
+	menuRoster->Append(ID_RosterDeleteRow, "&Delete Selected Row...\tCtrl-D", "Delete row from club membership");
+	menuBar->Append(menuRoster, "&Roster");
+	menuBar->Enable(ID_RosterNew,false);
+	menuBar->Enable(ID_RosterSave,false);
+	menuBar->Enable(ID_RosterSaveAs,false);
+	menuBar->Enable(ID_RosterClose,false);	
+	menuBar->Enable(ID_RosterDeleteRow,false);
+	wxMenu *menuEvent = new wxMenu;								// Event menu
+	menuEvent->Append(ID_EventNew, "&New...\tCtrl-N", "Create new club event");
+	menuEvent->Append(ID_EventOpen, "Open &Event...\tCtrl-E", "Open club event");
+	menuEvent->Append(ID_EventSave, "&Save...\tCtrl-C", "Save club event");
+	menuEvent->Append(ID_EventSaveAs, "&SaveAs...\tCtrl-C", "Save club event");
+	menuEvent->AppendSeparator();
+	menuBar->Append( menuEvent, "&Event");
+	menuBar->Enable(ID_EventNew,false);
+	menuBar->Enable(ID_EventOpen,false);
+	menuBar->Enable(ID_EventSave,false);
+	menuBar->Enable(ID_EventSaveAs,false);
     wxMenu *menuHelp = new wxMenu;								// Help menu
     menuHelp->Append(idMenuAbout, "&About\tF1", "Show info about this application");
-    wxMenuBar *menuBar = new wxMenuBar;							// menubar
-    menuBar->Append( menuFile, "&File");
-    menuBar->Append( menuRoster, "&Roster");
-    menuBar->Append( menuEvent, "&Event");
     menuBar->Append( menuHelp, "&Help");
     SetMenuBar( menuBar );
 
@@ -239,6 +251,31 @@ void MainFrame::OnRosterClose(wxCommandEvent& event)
 }
 
 /*************************************************************************************************************************************
+ * OnRosterDeleteRow - handler for ID_RosterDeleteRow
+ *
+ * VRM      Date      By    Description
+ * ===   ==========   ===   ==========================================================================================================
+ * 100   xx/xx/2014   SDW   initial coding
+ *************************************************************************************************************************************/
+void MainFrame::OnRosterDeleteRow(wxCommandEvent& event)
+{
+	if ( grid1->IsSelection() )
+    {
+        wxGridUpdateLocker locker(grid1);
+        for ( int n = 0; n < grid1->GetNumberRows(); )
+        {
+            if ( grid1->IsInSelection( n , 0 ) )
+                grid1->DeleteRows( n, 1 );
+            else
+                n++;
+        }
+    }
+
+
+	wxLogMessage("Roster Delete Row");
+}
+
+/*************************************************************************************************************************************
  * OnRosterNew - handler for ID_RosterNew
  *
  * VRM      Date      By    Description
@@ -312,6 +349,15 @@ void MainFrame::OnRosterOpen(wxCommandEvent& event)
 	grid1->SetColLabelValue(4, "Last");
 	grid1->AutoSizeColumns(true);
 	notebook->AddPage(grid1, "Roster", true);
+
+	// set status
+	SetStatusText("Roster Opened");
+
+	// enable menubar
+	menuBar->Enable(ID_RosterSave,true);
+	menuBar->Enable(ID_RosterSaveAs,true);
+	menuBar->Enable(ID_RosterClose,true);
+	menuBar->Enable(ID_RosterDeleteRow,true);
 }
 
 /*************************************************************************************************************************************
@@ -319,15 +365,19 @@ void MainFrame::OnRosterOpen(wxCommandEvent& event)
  *
  * VRM      Date      By    Description
  * ===   ==========   ===   ==========================================================================================================
- * 100   xx/xx/2014   SDW   initial coding
+ * 100   09/02/2014   SDW   initial coding
  *************************************************************************************************************************************/
 void MainFrame::OnRosterSave(wxCommandEvent& event)
 {
-	// check to see if roster is already open
-	if (!thisClub.isLoaded())
+	// check that file still exists
+	wxFileName savefile = rosterPath;
+	if (!savefile.IsFileWritable())
 		return;
 
-	wxLogMessage("Roster Save");
+	// save roster to selected file
+	thisClub.saveFile(rosterFilename);							// perform the save of the roster into the file
+	SetStatusText("Roster Saved");
+	return;
 }
 
 /*************************************************************************************************************************************
@@ -342,10 +392,6 @@ void MainFrame::OnRosterSaveAs(wxCommandEvent& event)
 	// local variables
 	int result;													// value returned from dialogs
 
-	// check to see if roster is already open
-	if (!thisClub.isLoaded())
-		return;
-
 	// select roster file to be opened
 	wxFileDialog *openDialog = new wxFileDialog(this, "Choose a roster file", "", "", "CSV (*.csv)|*.csv", wxFD_SAVE|wxFD_OVERWRITE_PROMPT|wxFD_CHANGE_DIR );
     result = openDialog->ShowModal();
@@ -357,6 +403,8 @@ void MainFrame::OnRosterSaveAs(wxCommandEvent& event)
     rosterFilename = openDialog->GetFilename();					// keep file name
     rosterPath = openDialog->GetPath();							// keep path
     thisClub.saveFile(rosterFilename);							// perform the save of the roster into the file
+
+	SetStatusText("Roster Saved");
 }
 
 /*************************************************************************************************************************************
@@ -371,5 +419,11 @@ void MainFrame::PerformRosterClose()
 	notebook->DeletePage(0);									// remove roster page from notebook   //TODO
 	thisClub.clearRoster();										// clear roster
 	// TODO clear strings with file and path names
+	SetStatusText("Roster Closed");
+	// disable menubar
+	menuBar->Enable(ID_RosterSave,false);
+	menuBar->Enable(ID_RosterSaveAs,false);
+	menuBar->Enable(ID_RosterClose,false);
+	menuBar->Enable(ID_RosterDeleteRow,false);
 }
 

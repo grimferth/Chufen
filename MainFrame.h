@@ -38,11 +38,10 @@ class MainFrame: public wxFrame
         {
             idMenuQuit = 1000,
             idMenuAbout,
-            ID_Hello = 1,
-			ID_RosterClose,
+			ID_RosterClose = 1,
+			ID_RosterDeleteRow,
 			ID_RosterNew,
 			ID_RosterOpen,
-			ID_RosterAdd,
 			ID_RosterSave,
 			ID_RosterSaveAs,
 			ID_EventNew,
@@ -60,6 +59,7 @@ class MainFrame: public wxFrame
 		void OnEventSaveAs(wxCommandEvent& event);
 		void OnQuit(wxCommandEvent& event);
 		void OnRosterClose(wxCommandEvent& event);
+		void OnRosterDeleteRow(wxCommandEvent& event);
 		void OnRosterNew(wxCommandEvent& event);
 		void OnRosterOpen(wxCommandEvent& event);
 		void OnRosterSave(wxCommandEvent& event);
